@@ -1,0 +1,16 @@
+{% extends "words/base.html" %}
+
+{% block subtitle %}Borrar Definición{% endblock %}
+
+{% block content %}
+    <div class="w3-container">
+        <form action="" method="POST">
+            {% csrf_token %}  
+            <div class="w3-section">
+                <h2 class="w3-xxlarge" style="text-align:center;"><b>Estas seguro que quieres borrar "{{definition}}"?</b></h2>
+            </div>
+            <button type="submit" class="w3-button w3-block w3-xlarge w3-padding-large w3-red w3-margin-bottom">Sí, borrar la definición</button>
+        </form>  
+    </div>
+
+{% endblock %}

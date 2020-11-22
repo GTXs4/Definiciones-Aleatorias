@@ -1,0 +1,32 @@
+{% extends "words/base.html" %}
+
+{% block subtitle %}Categorias{% endblock %}
+
+{% block content %}
+
+    {% for category in category_list %}
+        
+        <div class="w3-row-padding">
+
+            <div class="w3-half w3-margin-bottom">
+                <ul id="ul_0" class="w3-ul w3-light-grey w3-center">
+                    <li class="w3-red w3-xlarge w3-padding-32">Categoría</li>
+                    <li class="w3-padding-16"><b>{{category.category}}</b></li> 
+                </ul>
+            </div>
+
+            <div class="w3-half">
+                <ul id="ul_3" class="w3-ul w3-light-grey w3-center">
+                    <li class="w3-dark-grey w3-xlarge w3-padding-32">Modificar</li>
+                    {% if category.category != "Sin categoría" %}
+                        <li class="w3-padding-16"><a href="{% url 'updatecategory' category.id %}"><b>Actualizar</b></a></li>
+                    {% else %}
+                        <li class="w3-padding-16"><b>Actualizar</b></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    {% endfor %}
+
+
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "words/base.html" %}
+
+{% block subtitle %}Formulario de Actualización de Definición{% endblock %}
+
+{% block definition_message %}
+
+    {% if 'ok' in request.GET %}
+        <p style="color:#4CAF50;">
+            <b>Su definición se ha actualizado correctamente</b>
+        </p>
+    {% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="w3-container">
+
+        <div class="w3-row-padding ">
+            <div class="w3-col m4 w3-margin-bottom">
+                <h2 class="w3-xxlarge" style="text-align:center;"><b>Palabra</b></h2>
+                <div class="w3-light-grey">
+                    <div class="w3-container">
+                        <h3 class="w3-xlarge w3-text-red" style="text-align:center;"><b>{{definition.word}}</b></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="w3-col m4 w3-margin-bottom">
+                <h2 class="w3-xxlarge" style="text-align:center;"><b>Categoría</b></h2>
+                <div class="w3-light-grey">
+                    <div class="w3-container">
+                        <h3 class="w3-xlarge w3-text-red" style="text-align:center;"><b>{{definition.category}}</b></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="w3-col m4 w3-margin-bottom">
+                <h2 class="w3-xxlarge" style="text-align:center;"><b>Contexto</b></h2>
+                <div class="w3-light-grey">
+                    <div class="w3-container">
+                        <h3 class="w3-xlarge w3-text-red" style="text-align:center;"><b>{{definition.context}}</b></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form action="" method="POST">
+            {% csrf_token %}  
+            <div class="w3-section">
+                <label for="id_meaning">Significado</label>
+                {{form.meaning}}
+            </div>
+            {{form.meaning.errors}}
+            <div class="w3-section">
+                <label for="id_example_eng">Ejemplo en Ingles</label>
+                {{form.example_eng}}
+            </div>
+            {{form.example_eng.errors}}
+            <div class="w3-section">
+                <label for="id_example_spa">Ejemplo en Español</label>
+                {{form.example_spa}}
+            </div>
+            {{form.example_spa.errors}}
+            <button type="submit" class="w3-button w3-block w3-padding-large w3-red w3-margin-bottom">Actualizar Definición</button>
+        </form>  
+    </div>
+{% endblock %}

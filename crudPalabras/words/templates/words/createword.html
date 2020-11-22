@@ -1,0 +1,72 @@
+{% extends "words/base.html" %} 
+
+{% block subtitle %}Formulario de creación de una definición{% endblock %}
+
+{% block definition_message %}
+
+    {% if 'ok' in request.GET %}
+        <p style="color:#4CAF50;">
+            <b>Su definición se ha creado correctamente</b>
+        </p>
+    {% elif 'fail' in request.GET %}
+        <p style="color:#ff9800;">
+            <b>Algo ha fallado al crear su definición</b>
+        </p>
+    {% elif 'exists' in request.GET %}
+        <p style="color:#9c27b0;">
+            <b>La definición ya existe</b>
+        </p>
+    {% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+    <!-- Formulario para la creacion de una definición -->
+
+    <div class="w3-container">
+
+        <form action="" method="POST">
+            {% csrf_token %}  
+            <div class="w3-section">
+                <label for="id_word">Palabra (Eng)</label>
+                {{form.word}}
+            </div>
+            {{form.word.errors}}
+            <div class="w3-section">
+                <label for="id_category">Categoria</label>
+                {{form.category}}
+                <datalist id="categorias">
+                    {% for categoria in categorias %}
+                        <option value={{categoria.underscore_category}}>
+                    {% endfor %}
+                </datalist>
+            </div>
+            {{form.category.errors}}
+            <div class="w3-section">
+                <label for="id_context">Contexto</label>
+                {{form.context}}
+                <datalist id="contextos">
+                    <option value="Sin_contexto">
+                </datalist>
+            </div>
+            {{form.context.errors}}
+            <div class="w3-section">
+                <label for="id_meaning">Significado</label>
+                {{form.meaning}}
+            </div>
+            {{form.meaning.errors}}
+            <div class="w3-section">
+                <label for="id_example_en">Ejemplo en Ingles</label>
+                {{form.example_en}}
+            </div>
+            {{form.example_en.errors}}
+            <div class="w3-section">
+                <label for="id_example_sp">Ejemplo en Español</label>
+                {{form.example_sp}}
+            </div>
+            {{form.example_sp.errors}}
+            <button type="submit" class="w3-button w3-block w3-padding-large w3-red w3-margin-bottom">Crear Definición</button>
+        </form>  
+    </div>
+{% endblock %}

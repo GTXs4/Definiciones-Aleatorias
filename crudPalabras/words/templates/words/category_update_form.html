@@ -1,0 +1,31 @@
+{% extends "words/base.html" %}
+
+{% block subtitle %}Formulario de Actualización de Categoría{% endblock %}
+
+{% block definition_message %}
+
+    {% if 'ok' in request.GET %}
+        <p style="color:#4CAF50;">
+            <b>Su categoría se ha actualizado correctamente</b>
+        </p>
+    {% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="w3-container">
+
+        <form action="" method="POST">
+            {% csrf_token %}  
+            <div class="w3-section">
+                <label for="id_category">Categoría</label>
+                {{form.category}}
+            </div>
+            {{form.category.errors}}
+            
+            <button type="submit" class="w3-button w3-block w3-padding-large w3-red w3-margin-bottom">Actualizar Categoría</button>
+        </form>  
+    </div>
+
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends "words/base.html" %}
+
+{% block subtitle %}Modificar Definición{% endblock %}
+
+{% block content %}
+
+    <!-- Formulario para la busqueda de una definición -->
+
+    <div class="w3-container">
+
+        <div class="w3-section">
+            <h3>Ingresa la <b>Palabra (Eng)</b> relacionada con la <b>Definición</b> que deseas modificar</h3>
+            <input type="text" id="searched_word" class="w3-input w3-border" maxlength="100" minlength="1" required>
+        </div>
+        <button id="searchBtn" class="w3-button w3-block w3-padding-large w3-red w3-margin-bottom" disabled>Buscar Definición</button>
+    </div>
+
+    <div id="definitions_container" class="w3-row-padding">       
+    </div> 
+   
+
+    <script>
+        var searchBtn = document.getElementById("searchBtn");
+        searchBtn.addEventListener("click", function(){
+            var searched_word = encodeURIComponent(document.getElementById("searched_word").value.trim());
+            
+            if (searched_word.length > 0 && searched_word.length < 100){
+                const url = "{% url 'searchdefinitions' 'searched_word' %}".replace("searched_word", searched_word);
+                fetch(url).then(response => response.json()).then(function(data){
+                    
+                    // Recupera el div contenedor
+                    var container = document.getElementById("definitions_container");
+                    // Limpia el div de todos los hijos que se hayan añadido previamente
+                    // Nota: Si tienes solo un hijo puedes cambiar el while por un if para eliminarlo
+                    while (container.hasChildNodes()) {  
+                        container.removeChild(container.firstChild);
+                    }
+
+                    //Limpiamos el contenido del input
+                    document.getElementById("searched_word").value = '';
+                    searchBtn.disabled = true;
+
+                    //Comprobamos si hay alguna palabra
+                    if (data[0].meaning === ''){
+                        var subdiv = document.createElement('div');
+                        subdiv.classList.add('w3-container');
+                        var text = document.createElement('h1');
+                        text.classList.add('w3-xxxlarge', 'w3-text-red');
+                        text.innerHTML = "No se ha encontrado la palabra que buscas";
+                        subdiv.appendChild(text);
+                        container.appendChild(subdiv);
+                    } else{
+                        // Agrega las definiciones(en div) al div principal
+
+                        // Agrega cabezera
+                        divhead = document.createElement('div');
+                        divhead.classList.add('w3-col', 'w3-margin-bottom');
+                        divhead.innerHTML = '<h2 class="w3-xxlarge" style="text-align:left; display:inline-block;"><b>Palabra: </b></h2>'+
+                        '<h3 class="w3-xxlarge w3-text-red" style="text-align:left; display:inline-block; padding-left:8px;"><b>'
+                        + decodeURIComponent(searched_word)[0].toUpperCase() + decodeURIComponent(searched_word).slice(1).toLowerCase() + '</b></h3>';
+                        container.appendChild(divhead);
+
+                    
+                        // Agrega los titulos
+                        var n_subdivs = 5;
+                        for(i=0; i < n_subdivs; i++){ 
+
+                            var subdiv = document.createElement('div');
+                            if (i===0){
+                                subdiv.classList.add('w3-col','m2','w3-margin-bottom');
+                            }else{
+                                subdiv.classList.add('w3-col','m2');
+                            }
+
+                            var ul = document.createElement('ul');
+                            ul.classList.add('w3-ul', 'w3-light-grey', 'w3-center');
+                            ul.setAttribute("id", "ul_"+i);
+                            var li = document.createElement('li');
+                            //li.classList.add('w3-red', 'w3-xlarge', 'w3-padding-32'); //w3-dark-grey 
+
+                            switch (i){
+                                case 0:
+                                    li.classList.add('w3-red', 'w3-xlarge', 'w3-padding-32');
+                                    li.innerHTML = "Significado";
+                                    break;
+                                case 1:
+                                    li.classList.add('w3-red', 'w3-xlarge', 'w3-padding-32');
+                                    li.innerHTML = "Categoria";
+                                    break;
+                                case 2:
+                                    li.classList.add('w3-red', 'w3-xlarge', 'w3-padding-32');
+                                    li.innerHTML = "Contexto";
+                                    break;
+                                case 3:
+                                    li.classList.add('w3-dark-grey', 'w3-xlarge', 'w3-padding-32');
+                                    li.innerHTML = "Actualizar";
+                                    break;
+                                case 4:
+                                    li.classList.add('w3-dark-grey', 'w3-xlarge', 'w3-padding-32');
+                                    li.innerHTML = "Borrar";
+                                    break;
+                            }
+                            ul.appendChild(li);
+
+                            subdiv.appendChild(ul);
+                            container.appendChild(subdiv);
+                        }
+                        // Agrega el contenido, es decir las definiciones
+                        for(i in data){
+                            
+                            for(j=0; j < n_subdivs; j++){
+                                ul = document.getElementById("ul_"+j);
+                                var li = document.createElement('li');
+                                li.classList.add('w3-padding-16');
+                                
+                                switch (j){
+                                    case 0:
+                                        li.innerHTML = "<b>" + data[i].meaning + "</b>";
+                                        break;
+                                    case 1:
+                                        li.innerHTML = data[i].category;
+                                        break;
+                                    case 2:
+                                        li.innerHTML = data[i].context;
+                                        break;
+                                    case 3:
+                                        li.innerHTML = "<a href='{% url 'updatedefinition' 0 %}'>".replace('0', data[i].id) + "<b>Actualizar</b>" +"</a>";
+                                        break;
+                                    case 4:
+                                        li.innerHTML = "<a href='{% url 'deletedefinition' 0 %}'>".replace('0', data[i].id) + "<b>Borrar</b>" +"</a>";
+                                        break;                               
+                                }
+                                ul.appendChild(li);
+                            } 
+                        }
+                    }
+                    
+                })
+            }
+        })
+        
+        // Si escribimos una palabra valida, activa el boton
+        var searched_word = document.getElementById("searched_word");
+        searched_word.addEventListener("keyup", function(){
+            if (!this.checkValidity() || !this.value.trim()){
+                searchBtn.disabled = true;
+            } else {
+                searchBtn.disabled = false;
+            }
+        })
+    </script> 
+
+{% endblock %}

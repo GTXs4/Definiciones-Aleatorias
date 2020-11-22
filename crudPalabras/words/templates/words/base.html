@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Style -->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,700;1,400&display=swap">
+    <style>
+        html,body,h1,h2,h3,h4,h5,h6 {font-family: "Poppins", sans-serif;}
+        .errorlist{font-weight: bold; color:#f44336;}
+    </style>
+    <title>Aplicación Definiciones es-en</title>
+</head>
+<body>
+    <!-- Sidebar/menu -->
+    <nav class="w3-sidebar w3-red w3-collapse w3-top w3-large w3-padding" style="z-index:3;width:300px;font-weight:bold;" id="mySidebar"><br>
+        <a href="javascript:void(0)" onclick="w3_close()" class="w3-button w3-hide-large w3-display-topleft" style="width:100%;font-size:22px">Close Menu</a>
+        <div class="w3-container">
+            <h3 class="w3-padding-64"><b>Aplicación de<br>Definiciones<br>Español-Ingles</b></h3>
+        </div>
+        <div class="w3-bar-block">
+            <a href="{% url 'readword' %}" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Mirar una palabra</a> 
+            <a href="{% url 'createword' %}" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Crear un definición</a> 
+            <a href="{% url 'modifydefinition' %}" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Modificar una definición</a> 
+            <a href="{% url 'categories' %}" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Lista de categorias</a> 
+        </div>
+    </nav>
+    <!-- Top menu on small screens -->
+    <header class="w3-container w3-top w3-hide-large w3-red w3-xlarge w3-padding">
+        <a href="javascript:void(0)" class="w3-button w3-red w3-margin-right" onclick="w3_open()">☰</a>
+        <span>Definitions Sp-En</span>
+    </header>
+
+    <!-- Overlay effect when opening sidebar on small screens -->
+    <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+    <!-- main section -->
+    
+    <div class="w3-main" style="margin-left:340px;margin-right:40px">
+        <!-- Header -->
+        <div class="w3-container" style="margin-top:80px" id="showcase">
+            <h1 class="w3-jumbo"><b>Definición</b></h1>
+            <h1 class="w3-xxxlarge w3-text-red"><b>{% block subtitle %}{% endblock %}</b></h1>
+            <hr style="width:50px;border:5px solid red" class="w3-round">
+            {% block definition_message %}{% endblock %}
+        </div>
+        <!-- Content -->
+        {% block content %}{% endblock %}
+    </div>
+
+    <script>
+    // Script to open and close sidebar
+    function w3_open() {
+    document.getElementById("mySidebar").style.display = "block";
+    document.getElementById("myOverlay").style.display = "block";
+    }
+    
+    function w3_close() {
+    document.getElementById("mySidebar").style.display = "none";
+    document.getElementById("myOverlay").style.display = "none";
+    }
+
+    </script>
+
+</body>
+</html>

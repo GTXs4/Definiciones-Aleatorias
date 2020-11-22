@@ -1,0 +1,191 @@
+{% extends "words/base.html" %}
+
+{% block subtitle %}Palabras en Eng/Esp{% endblock %}
+
+{% block content %}
+
+    <div class="w3-container">
+        <button id="randomBtn" class="w3-button w3-red w3-padding-large w3-hover-black w3-margin-bottom">Obtener palabra aleatoria</button>
+        <button id='clue' onclick='showExamples()' disabled class="w3-button w3-amber w3-padding-large w3-hover-black w3-margin-bottom w3-margin-left">Pista</button>
+        <button id='show' onclick='showMeaning()' disabled class="w3-button w3-amber w3-padding-large w3-hover-black w3-margin-bottom w3-margin-left">Me rindo</button>
+    </div>
+
+    <div id="word_container" class="w3-row-padding">
+    </div>
+
+    <script>
+        var randomBtn = document.getElementById("randomBtn");
+        randomBtn.addEventListener("click", function(){
+            const url = "{% url 'word' %}";
+            fetch(url).then(response => response.json()).then(function(data){
+
+                // Recupera el div contenedor
+                var container = document.getElementById("word_container");
+                // Limpia el div de todos los hijos que se hayan añadido previamente
+                // Nota: Si tienes solo un hijo puedes cambiar el while por un if para eliminarlo
+                while (container.hasChildNodes()) {  
+                    container.removeChild(container.firstChild);
+                }
+
+                if (data[0].word === ''){
+                    var subdiv = document.createElement('div');
+                    subdiv.classList.add('w3-container');
+                    var text = document.createElement('h1');
+                    text.classList.add('w3-xlarge', 'w3-text-red');
+                    text.innerHTML = "Debes ingresar una definición antes.<br> Para ello puedes hacer click "+ "<b><a href='{% url 'createword' %}'>aqui</a></b>";
+                    subdiv.appendChild(text);
+                    container.appendChild(subdiv);
+                } else{
+
+                    // Activa los botones de pista y me rindo
+                    document.getElementById("clue").disabled = false;
+                    document.getElementById("show").disabled = false;
+                    // Agrega las palabras aleatorias(en div) al div principal
+                
+                    // Agrega los titulos
+                    var n_subdivs = 6;
+                    for(i=0; i < n_subdivs; i++){ 
+
+                        var subdiv = document.createElement('div');
+                        if (i===0){
+                            subdiv.classList.add('w3-col','m2','w3-margin-bottom');
+                        }else{
+                            subdiv.classList.add('w3-col','m2');
+                        }
+
+                        var ul = document.createElement('ul');
+                        ul.classList.add('w3-ul', 'w3-light-grey', 'w3-center');
+                        ul.setAttribute("id", "ul_"+i);
+                        var li = document.createElement('li');
+                        li.classList.add('w3-red', 'w3-xlarge', 'w3-padding-32');
+
+                        switch (i){
+                            case 0:
+                                li.innerHTML = "Palabra";
+                                break;
+                            case 1:
+                                li.innerHTML = "Categoria";
+                                break;
+                            case 2:
+                                li.innerHTML = "Contexto";
+                                break;
+                            case 3:
+                                li.innerHTML = "Ej. Ingles";
+                                break;
+                            case 4:
+                                li.innerHTML = "Ej. Español";
+                                break;
+                            case 5:
+                                li.innerHTML = "Significado";
+                                break;
+                        }
+                        ul.appendChild(li);
+
+                        subdiv.appendChild(ul);
+                        container.appendChild(subdiv);
+                    }
+                    // Agrega el contenido, es decir las palabras
+                    for(i in data){
+                        
+                        for(j=0; j < n_subdivs; j++){
+                            ul = document.getElementById("ul_"+j);
+                            var li = document.createElement('li');
+                            li.classList.add('w3-padding-16');
+                            
+                            switch (j){
+                                case 0:
+                                    li.innerHTML = "<b>" + data[i].word + "</b>";
+                                    break;
+                                case 1:
+                                    li.innerHTML = data[i].category;
+                                    break;
+                                case 2:
+                                    li.innerHTML = data[i].context;
+                                    break;
+                                case 3:
+                                    li.classList.add('example');
+                                    li.style.display = 'none';
+                                    li.innerHTML = data[i].example_en;
+                                    break;
+                                case 4:
+                                    li.classList.add('example');
+                                    li.style.display = 'none';
+                                    li.innerHTML = data[i].example_sp ;
+                                    break;
+                                case 5:
+                                    li.classList.add('meaning');
+                                    li.style.display = 'none';
+                                    li.innerHTML = "<b>" + data[i].meaning + "</b>";
+                                    break;
+                            }
+                            ul.appendChild(li);
+                        } 
+                    }
+                }    
+            })
+        })
+
+        // Funcion para mostrar el significado
+        function showMeaning(){
+            var button = document.getElementById("show");
+            var meanings = document.getElementsByClassName("meaning");
+            var button2 = document.getElementById("clue");
+            if (button2.disabled === false){
+                showExamples();
+            }
+            for(i = 0; i < meanings.length; i++){
+                meanings[i].style.display = "list-item";
+            }
+            button.disabled = true;
+        }
+        // Funcion para mostrar la pista
+        function showExamples(){
+            var button = document.getElementById("clue");
+            var examples = document.getElementsByClassName("example");
+            for(i = 0; i < examples.length; i++){
+                examples[i].style.display = "list-item";
+            }
+
+            // Solucion Momentanea a la altura de los li
+
+            var elements = [];
+            var n_elements = 6;
+
+            //Recupera todos los ul
+            for(i=0; i < n_elements; i++){
+                elements[i] = document.getElementById("ul_"+i).getElementsByTagName("li");
+            }
+            
+            //Recorre los li de los ul (Solo los de contenido) para encontrar sus alturas 
+            for(i=1; i < elements[0].length; i++){
+                
+                var height0 = (elements[0])[i].offsetHeight;
+                var height1 = (elements[3])[i].offsetHeight;
+                var height2 = (elements[4])[i].offsetHeight;
+
+                // Si la altura de la palabra es menor que la de algunos de los ejemplos...
+                if ( (height1 > height0) || (height2 > height0) ){
+                    var height_final = 0;
+                    var n_height = 4;
+                    if(height1 > height2){
+                        height_final = height1;
+                        n_height = 3;
+                    } else {
+                        height_final = height2;
+                    }
+                    for(j=0; j < n_elements; j++){
+                        if (j === n_height) { continue; }
+                        (elements[j])[i].style.height = "" + height_final + "px";
+                    }
+                } else if( (height0 > height1) || (height0 > height2) ){
+                    for(j=0; j < n_elements; j++){
+                        if (j === 0) { continue; }
+                        (elements[j])[i].style.height = "" + height0 + "px";
+                    }
+                }
+            }
+            button.disabled = true;
+        }
+    </script>
+
+{% endblock %}
